@@ -13,6 +13,7 @@ import { apiKeys } from "@/lib/api-keys"
 import { useTarget } from "@/hooks/store/use-target"
 import { useSendPush } from "@/hooks/use-send-push"
 import { fetcher } from "@/lib/protocol"
+import { useUser } from "@/hooks/use-user"
 
 export const SendDiaryTab = () => {
   const { push, replace } = useRouter()
@@ -20,13 +21,22 @@ export const SendDiaryTab = () => {
   const { selectDiary, date, product_id } = useSelectedDiary()
   const { isPending } = useAddProduct()
   const { mutate, isPending: isLoading } = useAddPost()
-  const { target } = useTarget()
+  const { target, sellerId } = useTarget()
   const trigger = useSendPush()
   const send = useSendPush()
+  const user = useUser()
 
   const [isShowDiary, setIsShowDiary] = useState(false)
   const handleOnSubmit = async () => {
-    if (product_id && selectDiary && target) {
+    if (!selectDiary) {
+      return undefined
+    }
+
+    if (!user) {
+      return undefined
+    }
+
+    if (target && product_id) {
       try {
         await Promise.all(
           selectDiary.map((diary) => {
@@ -34,7 +44,10 @@ export const SendDiaryTab = () => {
               type: "exchange-diary",
               product_id,
               private: true,
-              share: [target?._id],
+              share:
+                parseInt(user._id as string) === target._id
+                  ? [sellerId]
+                  : [target._id],
               extra: {
                 title: diary.extra.title,
                 content: diary.extra.content,

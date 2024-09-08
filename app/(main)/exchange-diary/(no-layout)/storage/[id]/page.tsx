@@ -24,8 +24,6 @@ export default function StorageIdPage() {
     parseInt(param.id as string)
   )
 
-  console.log("data: ", data)
-
   const { target } = useTarget()
   const { setProductId } = useSelectedDiary()
   const { push } = useRouter()

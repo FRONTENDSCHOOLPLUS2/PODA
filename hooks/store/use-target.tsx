@@ -12,18 +12,22 @@ type UseTargetTypes = {
     name: string
     image: string
   }
-  setTarget: (value: TargetTypes) => void
+  sellerId?: number
+  setTarget: (value: TargetTypes, id: number) => void
   onReset: () => void
 }
 
 export const useTarget = create<UseTargetTypes>((set) => ({
   target: undefined,
-  setTarget: (value) =>
+  sellerId: undefined,
+  setTarget: (value, id) =>
     set({
+      sellerId: id,
       target: value,
     }),
   onReset: () =>
     set({
+      sellerId: undefined,
       target: undefined,
     }),
 }))

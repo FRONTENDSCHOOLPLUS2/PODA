@@ -19,8 +19,12 @@ export const DiaryStorageTab = () => {
 
   const { setTarget } = useTarget()
 
-  const handleSetTargetWithPush = (id: number, target: TargetTypes) => {
-    setTarget(target)
+  const handleSetTargetWithPush = (
+    id: number,
+    target: TargetTypes,
+    sellerId: number
+  ) => {
+    setTarget(target, sellerId)
     push(`/exchange-diary/storage/${id}`)
   }
 
@@ -28,7 +32,9 @@ export const DiaryStorageTab = () => {
     <div
       className="w-full"
       key={item?._id}
-      onClick={() => handleSetTargetWithPush(item._id, item.extra.target)}>
+      onClick={() =>
+        handleSetTargetWithPush(item._id, item.extra.target, item.seller._id)
+      }>
       <DeliveryStatusItem diary={item} />
     </div>
   ))
