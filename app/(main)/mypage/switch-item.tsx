@@ -6,7 +6,6 @@ import { useInterestSheet } from "@/hooks/store/use-interest-sheet"
 import { fetcher } from "@/lib/protocol"
 import { Bell, LucideIcon, LucideProps } from "lucide-react"
 import { signOut } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import React from "react"
 
 interface SwitchItemProps {
@@ -24,19 +23,15 @@ export const SwitchItem = ({
 }: SwitchItemProps) => {
   const { onOpen } = useInterestSheet()
 
-  const router = useRouter()
-
-  const handleClick = () => {
+  const handleClick = async () => {
     switch (title) {
       case "관심사 변경":
         onOpen()
         break
       case "로그아웃":
-        signOut({ redirect: false }).then(() => {
-          localStorage.removeItem("token")
-          localStorage.removeItem("accessToken")
-          router.push("/")
-        })
+        await signOut({ callbackUrl: "/" })
+        localStorage.removeItem("token")
+        localStorage.removeItem("accessToken")
         break
       default:
         break
