@@ -26,16 +26,17 @@ export const SwitchItem = ({
 
   const router = useRouter()
 
-  const handleClick = async () => {
+  const handleClick = () => {
     switch (title) {
       case "관심사 변경":
         onOpen()
         break
       case "로그아웃":
-        await signOut()
-        localStorage.removeItem("token")
-        localStorage.removeItem("accessToken")
-        router.push("/")
+        signOut({ redirect: false }).then(() => {
+          localStorage.removeItem("token")
+          localStorage.removeItem("accessToken")
+          router.push("/")
+        })
         break
       default:
         break
