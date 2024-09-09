@@ -30,7 +30,9 @@ export const SwitchItem = ({
         onOpen()
         break
       case "로그아웃":
-        signOut({ callbackUrl: "/" })
+        await signOut({ callbackUrl: "/" })
+        localStorage.removeItem("token")
+        localStorage.removeItem("accessToken")
         break
       default:
         break

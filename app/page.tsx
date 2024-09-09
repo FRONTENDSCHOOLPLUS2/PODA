@@ -8,11 +8,6 @@ import { useEffect } from "react"
 export default function HomePage() {
   const router = useRouter()
 
-  useEffect(() => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("accessToken")
-  }, [])
-
   return (
     <div className="h-full">
       <Image
