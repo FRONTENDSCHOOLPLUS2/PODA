@@ -9,3 +9,11 @@ export function FullScreen() {
     </div>
   )
 }
+
+export function PartialLoading() {
+  return (
+    <div className="flex items-center justify-center w-full h-full">
+      <SyncLoader color="#3cc42e" />
+    </div>
+  )
+}

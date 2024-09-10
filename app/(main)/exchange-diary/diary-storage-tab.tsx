@@ -1,6 +1,5 @@
 "use client"
 
-import React, { useEffect } from "react"
 import { DeliveryStatusItem } from "./delivery-status-item"
 import { useRouter } from "next/navigation"
 import { useProductsDiarys } from "@/hooks/query/products"
@@ -9,13 +8,11 @@ import { Spacer } from "@/components/spacer"
 import { TargetTypes, useTarget } from "@/hooks/store/use-target"
 import { FullScreen } from "@/components/spinner"
 import Image from "next/image"
-import { useCurrentSession } from "@/hooks/use-current-session"
 
-export const DiaryStorageTab = () => {
+export const DiaryStorageTab = ({ userId }: { userId?: string }) => {
   const { push } = useRouter()
-  const { data: userData } = useCurrentSession()
 
-  const { data, isPending, refetch } = useProductsDiarys()
+  const { data, isPending } = useProductsDiarys(userId)
 
   const { setTarget } = useTarget()
 
@@ -38,10 +35,6 @@ export const DiaryStorageTab = () => {
       <DeliveryStatusItem diary={item} />
     </div>
   ))
-
-  useEffect(() => {
-    refetch()
-  }, [userData])
 
   return (
     <div className="w-full h-full pt-[76px]">
