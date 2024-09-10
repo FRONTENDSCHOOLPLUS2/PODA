@@ -5,34 +5,31 @@ import { fetcher } from "@/lib/protocol"
 import { ApiResError, ApiResSuccess } from "@/types/api-response"
 import { ExchangeDiaryTypes } from "@/types/exchange-diary"
 import { useQuery } from "@tanstack/react-query"
-import { useCurrentSession } from "../use-current-session"
 
-export const useProductsDiarys = () => {
-  const { data: userData } = useCurrentSession()
-
+export const useProductsDiarys = (userId?: string) => {
   const { data, isPending, error, refetch } = useQuery({
-    queryKey: [apiKeys.products, userData?.user?._id],
+    queryKey: [apiKeys.products, userId],
     queryFn: async (): Promise<
       ApiResSuccess<ExchangeDiaryTypes[]> | undefined
     > => {
-      if (userData) {
+      if (userId) {
         const searchParams = new URLSearchParams([
           [
             "custom",
             JSON.stringify({
-              "extra.target._id": userData?.user?._id,
+              "extra.target._id": userId,
             }),
           ],
         ])
         try {
-          if (userData) {
+          if (userId) {
             //타겟이 나인 것
             const targetIdData = await fetcher(
               `${apiKeys.product}?${searchParams.toString()}`
             )
             //내가 만든 것
             const sellerIdData = await fetcher(
-              `${apiKeys.product}?seller_id=${userData?.user?._id}`
+              `${apiKeys.product}?seller_id=${userId}`
             )
             //두개를 합쳐서 중복 제거 후 솔팅
             if (targetIdData && sellerIdData) {
