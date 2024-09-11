@@ -9,15 +9,32 @@ interface AvatarNameProps {
   classname?: string
 }
 
+const SERVER = process.env.NEXT_PUBLIC_API_URL
+
 export const AvatarName = ({ image, name, classname }: AvatarNameProps) => {
   return (
     <div
       className={`flex flex-col items-center justify-center space-y-0.5 ${classname}`}>
       <Avatar className="w-[48px] h-[48px]">
-        <AvatarImage src={`${process.env.NEXT_PUBLIC_API_URL}${image}`} />
-        <AvatarFallback className="bg-backgroundLighter">
-          <FaUser size={24} className="text-secondary" />
-        </AvatarFallback>
+        {image ? (
+          <>
+            <AvatarImage
+              src={`${image.startsWith("https") ? image : SERVER + image}`}
+            />
+            <AvatarFallback className="bg-backgroundLighter">
+              <FaUser size={24} className="text-secondary" />
+            </AvatarFallback>
+          </>
+        ) : (
+          <>
+            <AvatarImage
+              src={(<FaUser size={24} className="text-secondary" />) as any}
+            />
+            <AvatarFallback className="bg-backgroundLighter">
+              <FaUser size={24} className="text-secondary" />
+            </AvatarFallback>
+          </>
+        )}
       </Avatar>
       <span className="text-xs text-[#c4c4c4] font-semibold">{name}</span>
     </div>
