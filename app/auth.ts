@@ -26,7 +26,7 @@ export const {
             name: user.name,
             email: user.email,
             type: user.type,
-            image: user.profileImage && SERVER + user.profileImage,
+            image: user.image && SERVER + user.image,
             accessToken: user.token.accessToken,
             refreshToken: user.token.refreshToken,
             extra: {

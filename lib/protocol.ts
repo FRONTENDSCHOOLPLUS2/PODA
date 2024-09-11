@@ -81,7 +81,9 @@ const postFormRequest = (url: string, arg: FormData) => {
   return baseFetch({
     url,
     method: "POST",
-    headers: undefined,
+    headers: {
+      "client-id": "09-triots",
+    },
     data: arg,
   })
 }
