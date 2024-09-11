@@ -18,10 +18,13 @@ import Image from "next/image"
 import { signup } from "@/actions/userAction"
 import { useRouter } from "next/navigation"
 import { SignupForm } from "@/types/user"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import { FullScreen } from "@/components/spinner"
 import { useUserData } from "@/hooks/store/use-user-data"
 import { toast } from "sonner"
+import { postFormRequest } from "@/lib/protocol"
+
+const SERVER = process.env.NEXT_PUBLIC_API_URL
 
 const FormSchema = z
   .object({
@@ -40,6 +43,7 @@ const FormSchema = z
     passwordCheck: z.string().min(8, {
       message: "비밀번호는 8자리 이상 입력해주셔야 해요!",
     }),
+    attach: z.any(),
   })
   .refine((data) => data.password === data.passwordCheck, {
     path: ["passwordCheck"],
@@ -51,6 +55,8 @@ export default function SignupPage() {
   const { userData } = useUserData()
   const [isPending, startTransition] = useTransition()
 
+  const [fileInputValue, setFileInputValue] = useState("파일을 선택해주세요!")
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -58,11 +64,25 @@ export default function SignupPage() {
       email: "",
       password: "",
       passwordCheck: "",
+      attach: undefined,
     },
   })
 
   const onSubmit = async (formData: SignupForm) => {
     startTransition(async () => {
+      if (formData.attach !== undefined && formData.attach?.length > 0) {
+        const body = new FormData()
+        body.append("attach", formData.attach[0])
+
+        const fileRes = await postFormRequest(`${SERVER}/files`, body)
+
+        if (!fileRes.ok) {
+          throw new Error("파일 업로드 실패")
+        }
+
+        formData.image = fileRes.item[0].path
+      }
+
       formData.type = "seller"
       formData.extra = {
         age: userData.age,
@@ -71,8 +91,8 @@ export default function SignupPage() {
         interest: userData.interest,
         isOnboarding: false,
       }
+      delete formData.attach
       delete formData.passwordCheck
-      console.log("onSubmit formData of signup is : " + formData)
 
       const resData = await signup(formData)
 
@@ -169,6 +189,45 @@ export default function SignupPage() {
                   <FormLabel className="text-secondary">Re Password</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="attach"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-secondary">
+                    Profile Image
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex">
+                      <label
+                        className={`${
+                          form.getValues("attach")?.[0]
+                            ? ""
+                            : "text-secondary text-center"
+                        } h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background truncate`}
+                        htmlFor="attach">
+                        {form.getValues("attach")?.[0]
+                          ? fileInputValue
+                          : "파일을 선택해주세요!"}
+                      </label>
+                      <Input
+                        id="attach"
+                        accept="image/*"
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            form.setValue("attach", e.target.files)
+                            setFileInputValue(e.target.files[0]?.name)
+                          }
+                        }}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
