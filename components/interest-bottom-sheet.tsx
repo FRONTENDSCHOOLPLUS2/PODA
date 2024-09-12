@@ -18,7 +18,7 @@ import { useInterestSheet } from "@/hooks/store/use-interest-sheet"
 import { useSelectedDiary } from "@/hooks/store/use-selected-diary"
 import { useCurrentSession } from "@/hooks/use-current-session"
 
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import React, { useEffect } from "react"
 import { toast } from "sonner"
 
@@ -58,29 +58,28 @@ export const interests: string[] = [
 ]
 
 export const InterestBottomSheet = () => {
-  const { isOpen, onOpen, onClose, setOpen } = useInterestSheet()
+  const { isOpen, onClose, setOpen } = useInterestSheet()
   const { selectDiary, myInterest, setMyInterest, onReset, interest } =
     useSelectedDiary()
-  const { push } = useRouter()
   const pathname = usePathname()
   const { mutate } = useAddProduct()
 
   const { data } = useCurrentSession()
 
-  const { userInterest } = useUserInfo(data?.user?._id as string)
+  const { userInterest, userExtra } = useUserInfo(data?.user?._id as string)
   const { mutate: patchUserMutate } = usePatchUser(Number(data?.user?._id))
-  console.log("interest: ", interest)
 
-  // 바텀시트가 열고 닫으면 기존값으로 초기화 해주기
+  // 수정없이 바텀시트를 닫으면, 초기화해주기
   useEffect(() => {
     if (pathname === "/mypage") {
       setMyInterest(userInterest)
     }
-  }, [userInterest, pathname])
+  }, [isOpen])
 
   const handleEdit = () => {
     const requestBody = {
       extra: {
+        ...userExtra,
         interest: myInterest,
       },
     }
@@ -115,18 +114,15 @@ export const InterestBottomSheet = () => {
         interest: [...interest],
       },
     }
-
     if (!selectDiary) {
       return
     }
-
     try {
       mutate(requestBody)
     } catch (error) {
       console.log(error)
     } finally {
       onClose()
-      //   onReset()
     }
   }
 

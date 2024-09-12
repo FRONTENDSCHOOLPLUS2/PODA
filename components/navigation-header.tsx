@@ -2,12 +2,12 @@
 
 import React from "react"
 import { Button } from "./ui/button"
-import { ChevronLeft, Search } from "lucide-react"
+import { ChevronLeft, FileEdit, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { useDiaryValues } from "@/hooks/store/use-diary"
-import { useAddPost } from "@/hooks/mutation/post"
+import { useAddPost, usePatchPost } from "@/hooks/mutation/post"
 
 interface NavigationHeaderProps {
   isBack?: boolean
@@ -42,8 +42,9 @@ export const NavigationHeader = ({
     selectedTags,
     resetValues,
   } = useDiaryValues()
-
-  const { mutate } = useAddPost()
+  const { diaryId } = useParams()
+  const { mutate: addPostMutate } = useAddPost()
+  const { mutate: patchPostMutate } = usePatchPost(Number(diaryId))
   const { back, push } = useRouter()
 
   const handleSave = () => {
@@ -58,12 +59,32 @@ export const NavigationHeader = ({
     }
 
     try {
-      mutate(requestBody)
+      addPostMutate(requestBody)
     } catch (error) {
       console.log(error)
     } finally {
       push("/mydiary")
       resetValues()
+    }
+  }
+
+  const handleEdit = () => {
+    const requestBody = {
+      extra: {
+        title: noteTitleVal,
+        content: noteContentVal,
+        mood: moodVal,
+        tag: selectedTags ? [...selectedTags] : [],
+      },
+    }
+    try {
+      const res = patchPostMutate(requestBody)
+      console.log("res: ", res)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      resetValues()
+      push("/mydiary")
     }
   }
 
@@ -130,13 +151,28 @@ export const NavigationHeader = ({
         className={cn("text-primary flex gap-2", !isSave && "hidden")}
         onClick={handleSave}>
         <Image
-          width={28}
-          height={28}
+          width={30}
+          height={30}
           src={"/assets/svg/checkBtn.svg"}
           alt="저장버튼"
           className={cn(!isSave && "hidden")}
         />
         저장
+      </Button>
+
+      <Button
+        variant="ghost"
+        disabled={!isEditMode}
+        className={cn("text-primary flex gap-2", !isEditMode && "hidden")}
+        onClick={handleEdit}>
+        <div className="bg-mainColor rounded-full p-[6px]">
+          <FileEdit
+            width={20}
+            height={20}
+            className={cn("text-black -mr-[1px]", !isEditMode && "hidden")}
+          />
+        </div>
+        수정
       </Button>
     </div>
   )

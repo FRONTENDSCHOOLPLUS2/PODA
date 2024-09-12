@@ -13,9 +13,11 @@ export const useUserInfo = (id: string) => {
     staleTime: 1000 * 3,
   })
   const userInterest = data?.item?.extra?.interest
+  const userExtra = data?.item?.extra
   return {
     data,
     userInterest,
+    userExtra,
     isPending,
     error,
     refetch,

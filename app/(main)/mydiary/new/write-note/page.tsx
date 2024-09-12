@@ -32,7 +32,7 @@ export default function WriteNotePage() {
       <div className="h-full px-6 pt-16">
         <Input
           placeholder="제목 입력..."
-          className="mb-2 outline-none border-none placeholder:text-3xl placeholder:text-primary placeholder:font-extrabold text-primary text-3xl font-extrabold"
+          className="mb-2 outline-none border-none placeholder:text-3xl placeholder:text-[#c4c4c4] placeholder:font-extrabold text-primary text-3xl font-extrabold"
           value={noteTitleVal}
           onChange={(e) => {
             handleTitleVal(e)
