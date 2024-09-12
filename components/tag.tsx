@@ -15,14 +15,14 @@ export const Tag = ({
 }) => {
   const [selected, setSelected] = useState<boolean>(false)
   const { addUserInterest, removeUserInterest } = useUserData()
-  const { removeInterest, setInterest, setMyInterest, myInterest, interest } =
+  const { removeInterest, setInterest, setMyInterest, myInterest } =
     useSelectedDiary()
 
   const pathName = usePathname()
 
   useEffect(() => {
     if (
-      pathName === "mypage" &&
+      pathName === "/mypage" &&
       userInterest &&
       userInterest.includes(children)
     ) {
@@ -35,18 +35,24 @@ export const Tag = ({
   const handleSelectTag = (e: React.MouseEvent<HTMLLabelElement>) => {
     if (selected) {
       setSelected(false)
-      removeInterest(children)
-      removeUserInterest(children)
-
+      if (pathName === "/exchange-diary") {
+        removeInterest(children)
+      }
+      if (pathName === "/get-extra-user-info/multi-select/1") {
+        removeUserInterest(children)
+      }
       if (pathName === "/mypage") {
         const updatedInterest = myInterest.filter((item) => item !== children)
         setMyInterest(updatedInterest)
       }
     } else {
       setSelected(true)
-      setInterest(children)
-      addUserInterest(children)
-
+      if (pathName === "/exchange-diary") {
+        setInterest(children)
+      }
+      if (pathName === "/get-extra-user-info/multi-select/1") {
+        addUserInterest(children)
+      }
       if (pathName === "/mypage") {
         setMyInterest([...myInterest, children])
       }

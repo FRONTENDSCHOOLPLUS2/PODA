@@ -81,7 +81,7 @@ export const InterestBottomSheet = () => {
   const handleEdit = () => {
     const requestBody = {
       extra: {
-        interest: [...interest],
+        interest: myInterest,
       },
     }
     try {
