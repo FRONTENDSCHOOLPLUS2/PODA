@@ -30,9 +30,6 @@ export const {
             accessToken: user.token.accessToken,
             refreshToken: user.token.refreshToken,
             extra: {
-              age: user.extra.age,
-              gender: user.extra.gender,
-              region: user.extra.region,
               interest: user.extra.interest,
               isOnboarding: user.extra.isOnboarding,
             },
@@ -71,9 +68,6 @@ export const {
     async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token._id = user._id
-        token.age = user.extra?.age
-        token.gender = user.extra?.gender
-        token.region = user.extra?.region
         token.isOnboarding = user.extra?.isOnboarding
         token.interest = user.extra?.interest
         token.accessToken = user.accessToken
@@ -90,9 +84,6 @@ export const {
 
       if (trigger === "update" && session) {
         token._id = session._id
-        token.age = session.extra.age
-        token.gender = session.extra.gender
-        token.region = session.extra.region
         token.isOnboarding = true
         token.interest = session.extra.interest
         token.accessToken = session.token.accessToken
@@ -106,9 +97,6 @@ export const {
       session.user.providerAccountId = token.providerAccountId
       session.user._id = token._id
       session.user.extra = {
-        age: token.age,
-        gender: token.gender,
-        region: token.region,
         interest: token.interest,
         isOnboarding: token.isOnboarding,
       }

@@ -22,7 +22,6 @@ export default async function middleware(request: NextRequest) {
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
-    pathname.startsWith("/get-extra-user-info") ||
     pathname.startsWith("/onboarding")
   ) {
     if (session?.user) {
@@ -40,7 +39,6 @@ export const config = {
     "/welcome/:path*",
     "/login/:path*",
     "/signup/:path*",
-    "/get-extra-user-info/:path*",
     "/onboarding/:path*",
     "/",
   ],

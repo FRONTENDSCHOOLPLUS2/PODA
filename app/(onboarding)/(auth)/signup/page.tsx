@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation"
 import { SignupForm } from "@/types/user"
 import { useState, useTransition } from "react"
 import { FullScreen } from "@/components/spinner"
-import { useUserData } from "@/hooks/store/use-user-data"
 import { toast } from "sonner"
 import { postFormRequest } from "@/lib/protocol"
 
@@ -52,7 +51,6 @@ const FormSchema = z
 
 export default function SignupPage() {
   const router = useRouter()
-  const { userData } = useUserData()
   const [isPending, startTransition] = useTransition()
 
   const [fileInputValue, setFileInputValue] = useState("파일을 선택해주세요!")
@@ -85,10 +83,7 @@ export default function SignupPage() {
 
       formData.type = "seller"
       formData.extra = {
-        age: userData.age,
-        gender: userData.gender,
-        region: userData.region,
-        interest: userData.interest,
+        interest: [],
         isOnboarding: false,
       }
       delete formData.attach
@@ -209,7 +204,7 @@ export default function SignupPage() {
                           form.getValues("attach")?.[0]
                             ? ""
                             : "text-secondary text-center"
-                        } h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background truncate`}
+                        } h-10 w-full rounded-md bg-backgroundLighter px-3 py-2 text-sm ring-offset-background truncate`}
                         htmlFor="attach">
                         {form.getValues("attach")?.[0]
                           ? fileInputValue

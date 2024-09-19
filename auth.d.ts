@@ -4,9 +4,6 @@ export declare module "@auth/core/types" {
     loginType?: string
     providerAccountId?: string
     extra?: {
-      age?: string
-      gender?: string
-      region?: string
       interest?: string[]
       isOnboarding?: boolean
     }
@@ -26,9 +23,6 @@ export declare module "@auth/core/jwt" {
     _id?: string
     loginType?: string
     providerAccountId?: string
-    age?: string
-    gender?: string
-    region?: string
     interest?: string[]
     isOnboarding?: boolean
     accessToken?: string

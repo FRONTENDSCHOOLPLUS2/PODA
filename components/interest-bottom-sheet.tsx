@@ -16,9 +16,10 @@ import { usePatchUser } from "@/hooks/mutation/user"
 import { useUserInfo } from "@/hooks/query/user"
 import { useInterestSheet } from "@/hooks/store/use-interest-sheet"
 import { useSelectedDiary } from "@/hooks/store/use-selected-diary"
+import { useUserData } from "@/hooks/store/use-user-data"
 import { useCurrentSession } from "@/hooks/use-current-session"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import React, { useEffect } from "react"
 import { toast } from "sonner"
 
@@ -59,9 +60,11 @@ export const interests: string[] = [
 
 export const InterestBottomSheet = () => {
   const { isOpen, onClose, setOpen } = useInterestSheet()
+  const { userData, clearUserInterest } = useUserData()
   const { selectDiary, myInterest, setMyInterest, onReset, interest } =
     useSelectedDiary()
   const pathname = usePathname()
+  const router = useRouter()
   const { mutate } = useAddProduct()
 
   const { data } = useCurrentSession()
@@ -75,6 +78,32 @@ export const InterestBottomSheet = () => {
       setMyInterest(userInterest)
     }
   }, [isOpen])
+
+  const handleRegister = () => {
+    const reqBody = {
+      extra: {
+        ...userExtra,
+        interest: userData.interest,
+      },
+    }
+
+    try {
+      patchUserMutate(reqBody)
+      toast.success("관심사가 등록되었습니다!", {
+        style: {
+          backgroundColor: "#3e3e3e",
+          color: "white",
+          border: "none",
+          font: "bolder",
+        },
+      })
+      onClose()
+      clearUserInterest()
+      router.push(`/mydiary/new/write-diary`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleEdit = () => {
     const requestBody = {
@@ -134,11 +163,17 @@ export const InterestBottomSheet = () => {
             <DrawerTitle className="text-xl font-black mb-1">
               관심사 선택
             </DrawerTitle>
-            {pathname === "/mypage" ? (
+            {pathname === "/welcome" && (
+              <DrawerDescription className="text-xs text-secondary">
+                관심사를 선택해주세요
+              </DrawerDescription>
+            )}
+            {pathname === "/mypage" && (
               <DrawerDescription className="text-xs text-secondary">
                 당신의 관심사를 수정할 수 있습니다.
               </DrawerDescription>
-            ) : (
+            )}
+            {pathname === "/exchange-diary" && (
               <DrawerDescription className="text-xs text-secondary">
                 비슷한 관심사를 가진 분에게 배송됩니다
               </DrawerDescription>
@@ -154,16 +189,27 @@ export const InterestBottomSheet = () => {
         </div>
 
         <DrawerFooter>
-          {pathname === "/mypage" ? (
+          {pathname === "/welcome" && (
+            <Button
+              onClick={handleRegister}
+              className="bg-mainColor h-[48px] text-black text-md font-black"
+              disabled={userData.interest?.length === 0}>
+              완료
+            </Button>
+          )}
+          {pathname === "/mypage" && (
             <Button
               onClick={handleEdit}
-              className="bg-mainColor h-[48px] text-black text-md font-black">
+              className="bg-mainColor h-[48px] text-black text-md font-black"
+              disabled={myInterest.length === 0}>
               수정
             </Button>
-          ) : (
+          )}
+          {pathname === "/exchange-diary" && (
             <Button
               onClick={handleSubmit}
-              className="bg-mainColor h-[48px] text-black text-md font-black">
+              className="bg-mainColor h-[48px] text-black text-md font-black"
+              disabled={interest.length === 0}>
               배송시작
             </Button>
           )}

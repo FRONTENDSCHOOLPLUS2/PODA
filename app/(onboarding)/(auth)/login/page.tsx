@@ -24,7 +24,6 @@ import {
   signInWithGoogle,
 } from "@/actions/authAction"
 import { useTransition } from "react"
-import { useUserData } from "@/hooks/store/use-user-data"
 import { FullScreen } from "@/components/spinner"
 import { toast } from "sonner"
 
@@ -38,14 +37,9 @@ const FormSchema = z.object({
   password: z.string().min(8, {
     message: "비밀번호는 최소 8 자리 이상 입력해주셔야 해요!",
   }),
-  age: z.string().optional(),
-  gender: z.string().optional(),
-  region: z.string().optional(),
-  interest: z.array(z.string()).optional(),
 })
 
 export default function LoginPage() {
-  const { userData } = useUserData()
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -53,10 +47,6 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
-      age: userData.age || "",
-      gender: userData.gender || "",
-      region: userData.region || "",
-      interest: userData.interest || [],
     },
   })
 
@@ -120,50 +110,6 @@ export default function LoginPage() {
                       <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="hidden" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="hidden" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="region"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="hidden" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="interest"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="hidden" {...field} />
-                    </FormControl>
                   </FormItem>
                 )}
               />

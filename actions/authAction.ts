@@ -30,25 +30,28 @@ export async function signInWithCredentials(
 
     if (!isOnboarding) {
       await update(resLogin.item)
-    }
 
-    const resMutateUser = await fetch(`${SERVER}/users/${resLogin.item._id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${resLogin.item.token.accessToken}`,
-        "Content-Type": "application/json",
-        "client-id": "09-triots",
-      },
-      body: JSON.stringify({
-        extra: {
-          ...resLogin.item.extra,
-          isOnboarding: true,
-        },
-      }),
-    })
+      const resMutateUser = await fetch(
+        `${SERVER}/users/${resLogin.item._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${resLogin.item.token.accessToken}`,
+            "Content-Type": "application/json",
+            "client-id": "09-triots",
+          },
+          body: JSON.stringify({
+            extra: {
+              ...resLogin.item.extra,
+              isOnboarding: true,
+            },
+          }),
+        }
+      )
 
-    if (!resMutateUser.ok) {
-      console.log(`authAction의 resMustateUser 에러 : `, resMutateUser)
+      if (!resMutateUser.ok) {
+        console.log(`authAction의 resMustateUser 에러 : `, resMutateUser)
+      }
     }
   } catch (error) {
     return JSON.parse(JSON.stringify(error))
@@ -62,35 +65,13 @@ export async function signInWithCredentials(
 }
 
 export async function signInWithGoogle(formData: FormData) {
-  const interest = formData.getAll("interest")
-  const encodedInterest = interest.map((category) =>
-    encodeURIComponent(category as string)
-  )
-
   await signIn("google", {
-    redirectTo: `/api/oauth-signup?age=${encodeURIComponent(
-      formData.get("age") as string
-    )}&gender=${encodeURIComponent(
-      formData.get("gender") as string
-    )}&region=${encodeURIComponent(
-      formData.get("region") as string
-    )}&interest=${encodedInterest}`,
+    redirectTo: `/api/oauth-signup`,
   })
 }
 
 export async function signInWithGithub(formData: FormData) {
-  const interest = formData.getAll("interest")
-  const encodedInterest = interest.map((category) =>
-    encodeURIComponent(category as string)
-  )
-
   await signIn("github", {
-    redirectTo: `/api/oauth-signup?age=${encodeURIComponent(
-      formData.get("age") as string
-    )}&gender=${encodeURIComponent(
-      formData.get("gender") as string
-    )}&region=${encodeURIComponent(
-      formData.get("region") as string
-    )}&interest=${encodedInterest}`,
+    redirectTo: `/api/oauth-signup`,
   })
 }
