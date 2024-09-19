@@ -9,8 +9,6 @@ const SERVER = process.env.NEXT_PUBLIC_API_URL
 export async function signInWithCredentials(
   formData: Pick<SignupForm, "email" | "password">
 ) {
-  const session = await auth()
-
   let isOnboarding
   try {
     await signIn("credentials", {
@@ -38,7 +36,7 @@ export async function signInWithCredentials(
         "client-id": "09-triots",
       },
       body: JSON.stringify({
-        refreshToken: session?.refreshToken,
+        refreshToken: resLogin?.item?.token?.refreshToken,
         extra: {
           ...resLogin.item.extra,
           isOnboarding: true,
@@ -52,8 +50,6 @@ export async function signInWithCredentials(
   } catch (error) {
     return JSON.parse(JSON.stringify(error))
   }
-
-  console.log("authAction의 session: ", session)
 
   if (!isOnboarding) {
     redirect("/welcome")
