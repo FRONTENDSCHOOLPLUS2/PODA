@@ -3,6 +3,7 @@ import NextAuth from "next-auth"
 import CredentailsProvider from "next-auth/providers/credentials"
 import google from "next-auth/providers/google"
 import github from "next-auth/providers/github"
+import jwt, { JwtPayload } from "jsonwebtoken"
 
 const SERVER = process.env.NEXT_PUBLIC_API_URL
 const AUTH_SECRET = process.env.AUTH_SECRET
@@ -29,10 +30,9 @@ export const {
             image: user.image && SERVER + user.image,
             accessToken: user.token.accessToken,
             refreshToken: user.token.refreshToken,
-            extra: {
-              interest: user.extra.interest,
-              isOnboarding: user.extra.isOnboarding,
-            },
+            interest: user.extra.interest,
+            isOnboarding: user.extra.isOnboarding,
+            tokenExpired: false,
           }
         } else if (!res.ok) {
           return { error: res.message }
@@ -58,9 +58,48 @@ export const {
     signIn: "/login",
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (user.error) {
         throw new Error(user.error)
+      }
+
+      switch (account?.provider) {
+        case "google":
+        case "github":
+          let userInfo
+          try {
+            const resSignup = await postRequest("/users/signup/oauth", {
+              name: user?.name,
+              email: user?.email,
+              image: user.image,
+              type: "seller",
+              loginType: account.provider,
+              extra: {
+                providerAccountId: account.providerAccountId,
+                interest: [],
+                isOnboarding: false,
+              },
+            })
+
+            const resLogin = await postRequest("/users/login/with", {
+              providerAccountId: account.providerAccountId,
+            })
+            if (resLogin.ok) {
+              userInfo = resLogin.item
+            } else if (!resLogin.ok)
+              throw new Error("oauth-signup route.ts의 resLogin 에러")
+          } catch (error) {
+            console.error(error)
+          }
+
+          user._id = String(userInfo._id)
+          user.interest = userInfo.extra.interest
+          user.isOnboarding = userInfo.extra.isOnboarding
+          user.tokenExpired = false
+          user.accessToken = userInfo.token.accessToken
+          user.refreshToken = userInfo.token.refreshToken
+
+          break
       }
       return true
     },
@@ -68,8 +107,9 @@ export const {
     async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token._id = user._id
-        token.isOnboarding = user.extra?.isOnboarding
-        token.interest = user.extra?.interest
+        token.interest = user.interest
+        token.isOnboarding = user.isOnboarding
+        token.tokenExpired = user.tokenExpired
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
       }
@@ -82,12 +122,59 @@ export const {
         token.providerAccountId = account.providerAccountId
       }
 
-      if (trigger === "update" && session) {
-        token._id = session._id
-        token.isOnboarding = true
-        token.interest = session.extra.interest
-        token.accessToken = session.token.accessToken
-        token.refreshToken = session.token.refreshToken
+      if (trigger === "update" && session.key === "interest") {
+        token.interest = session.interest
+      }
+
+      const decodedToken = jwt.decode(
+        token.accessToken as string
+      ) as JwtPayload | null
+
+      const accessTokenExpires = decodedToken?.exp
+        ? decodedToken?.exp * 1000
+        : 0
+
+      const shouldRefreshToken = Date.now() > accessTokenExpires
+
+      if (shouldRefreshToken) {
+        try {
+          console.log("토큰 만료됨.", Date.now() + " > " + accessTokenExpires)
+          const res = await fetch(`${SERVER}/auth/refresh`, {
+            headers: {
+              "client-id": "09-triots",
+              Authorization: `Bearer ${token.refreshToken}`,
+            },
+          })
+          if (res.ok) {
+            const resJson = await res.json()
+            return {
+              ...token,
+              tokenExpired: false,
+              accessToken: resJson.accessToken,
+            }
+          } else {
+            if (res.status === 401) {
+              console.log(
+                "리플래시 토큰 인증 실패. 로그인 페이지로 이동",
+                await res.json()
+              )
+              return {
+                ...token,
+                tokenExpired: true,
+              }
+            }
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error)
+            return {
+              ...token,
+              error: error.message,
+            }
+          }
+        }
+      } else {
+        // console.log(`액세스 토큰 ${accessTokenExpires - Date.now()} ms 남음`)
       }
 
       return token
@@ -99,6 +186,7 @@ export const {
       session.user.extra = {
         interest: token.interest,
         isOnboarding: token.isOnboarding,
+        tokenExpired: token.tokenExpired,
       }
       session.accessToken = token.accessToken
       session.refreshToken = token.refreshToken
