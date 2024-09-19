@@ -30,29 +30,24 @@ export async function signInWithCredentials(
 
     isOnboarding = resLogin?.item?.extra?.isOnboarding
 
-    if (!isOnboarding) {
-      const resMutateUser = await fetch(
-        `${SERVER}/users/${resLogin.item._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${resLogin.item.token.accessToken}`,
-            "Content-Type": "application/json",
-            "client-id": "09-triots",
-          },
-          body: JSON.stringify({
-            refreshToken: session?.refreshToken,
-            extra: {
-              ...resLogin.item.extra,
-              isOnboarding: true,
-            },
-          }),
-        }
-      )
+    const resMutateUser = await fetch(`${SERVER}/users/${resLogin.item._id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${resLogin.item.token.accessToken}`,
+        "Content-Type": "application/json",
+        "client-id": "09-triots",
+      },
+      body: JSON.stringify({
+        refreshToken: session?.refreshToken,
+        extra: {
+          ...resLogin.item.extra,
+          isOnboarding: true,
+        },
+      }),
+    })
 
-      if (!resMutateUser.ok) {
-        console.log(`authAction의 resMustateUser 에러 : `, resMutateUser)
-      }
+    if (!resMutateUser.ok) {
+      console.log(`authAction의 resMustateUser 에러 : `, resMutateUser)
     }
   } catch (error) {
     return JSON.parse(JSON.stringify(error))

@@ -1,4 +1,5 @@
 "use client"
+import { updateSession } from "@/actions/updateSessionAction"
 import { Tag } from "@/components/tag"
 import { Button } from "@/components/ui/button"
 import {
@@ -79,12 +80,17 @@ export const InterestBottomSheet = () => {
     }
   }, [isOpen])
 
-  const handleRegister = () => {
-    const reqBody = {
+  const handleRegister = async () => {
+    const reqBody: any = {
       extra: {
         ...userExtra,
         interest: userData.interest,
       },
+    }
+
+    const updateInterest: any = {
+      key: "interest",
+      interest: userData.interest,
     }
 
     try {
@@ -97,6 +103,7 @@ export const InterestBottomSheet = () => {
           font: "bolder",
         },
       })
+      updateSession(updateInterest)
       onClose()
       clearUserInterest()
       router.push(`/mydiary/new/write-diary`)
@@ -105,13 +112,19 @@ export const InterestBottomSheet = () => {
     }
   }
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     const requestBody = {
       extra: {
         ...userExtra,
         interest: myInterest,
       },
     }
+
+    const updateMyInterest: any = {
+      key: "interest",
+      interest: myInterest,
+    }
+
     try {
       patchUserMutate(requestBody)
       toast.success("관심사가 수정되었습니다!", {
@@ -122,6 +135,7 @@ export const InterestBottomSheet = () => {
           font: "bolder",
         },
       })
+      updateSession(updateMyInterest)
     } catch (error) {
       console.log(error)
     } finally {
@@ -201,7 +215,7 @@ export const InterestBottomSheet = () => {
             <Button
               onClick={handleEdit}
               className="bg-mainColor h-[48px] text-black text-md font-black"
-              disabled={myInterest.length === 0}>
+              disabled={myInterest?.length === 0}>
               수정
             </Button>
           )}
@@ -209,7 +223,7 @@ export const InterestBottomSheet = () => {
             <Button
               onClick={handleSubmit}
               className="bg-mainColor h-[48px] text-black text-md font-black"
-              disabled={interest.length === 0}>
+              disabled={interest?.length === 0}>
               배송시작
             </Button>
           )}
