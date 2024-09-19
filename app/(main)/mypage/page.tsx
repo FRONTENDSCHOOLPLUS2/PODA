@@ -3,21 +3,17 @@
 import { Bell, Camera, LucideIcon, Palette, LogOut } from "lucide-react"
 import { Half2Icon } from "@radix-ui/react-icons"
 import React from "react"
-import { Switch } from "@/components/ui/switch"
 import { SwitchItem } from "./switch-item"
 import { Footer } from "@/components/footer"
 import { useUserInfo } from "@/hooks/query/user"
 
 import { patchRequest } from "@/lib/protocol"
 import { apiKeys } from "@/lib/api-keys"
-import { signOut } from "next-auth/react"
-import { useInterestSheet } from "@/hooks/store/use-interest-sheet"
 import { useCurrentSession } from "@/hooks/use-current-session"
 
 export default function MyPagePage() {
   const { data: userData } = useCurrentSession()
   const { data, refetch } = useUserInfo(userData?.user?._id as string)
-  const { onOpen } = useInterestSheet()
 
   const mypageItems = [
     {
