@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         "client-id": "09-triots",
       },
       body: JSON.stringify({
-        refreshToken: resLogin?.item?.token?.refreshToken,
+        refreshToken: session?.refreshToken,
         extra: {
           ...resLogin.item.extra,
           isOnboarding: true,
