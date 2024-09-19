@@ -17,7 +17,6 @@ export default async function middleware(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.redirect(`${nextUrl.origin}/`)
     }
-    // Logic for API routes
   } else if (
     pathname === "/" ||
     pathname.startsWith("/login") ||
