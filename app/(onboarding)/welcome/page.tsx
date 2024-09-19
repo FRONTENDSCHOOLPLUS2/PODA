@@ -1,14 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useInterestSheet } from "@/hooks/store/use-interest-sheet"
 import { useCurrentSession } from "@/hooks/use-current-session"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 
 export default function WelcomePage() {
-  const router = useRouter()
-
-  const { data, status } = useCurrentSession()
+  const { data } = useCurrentSession()
+  const { onOpen } = useInterestSheet()
 
   return (
     <div className="h-full">
@@ -34,8 +33,8 @@ export default function WelcomePage() {
       <Button
         type="button"
         className="fixed bottom-6 w-5/6 max-w-96 left-1/2 -translate-x-1/2 bg-mainColor text-black font-bold "
-        onClick={() => router.push(`/mydiary/new/write-diary`)}>
-        일기 작성하기
+        onClick={() => onOpen()}>
+        관심사 선택하기
       </Button>
     </div>
   )

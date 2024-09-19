@@ -28,7 +28,7 @@ export interface User {
 export interface SignupForm extends Pick<User, "name" | "email"> {
   type?: string
   extra?: {
-    interest: undefined
+    interest?: string[]
     isOnboarding?: boolean
   }
   password: string

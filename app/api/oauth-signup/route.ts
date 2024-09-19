@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       type: "seller",
       extra: {
         providerAccountId: session?.user?.providerAccountId,
-        interest: undefined,
+        interest: [],
         isOnboarding: false,
       },
       loginType: session?.user?.loginType,

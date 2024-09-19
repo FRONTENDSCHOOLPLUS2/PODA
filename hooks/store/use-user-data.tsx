@@ -11,7 +11,7 @@ interface IUserData {
 
 export const useUserData = create<IUserData>((set) => ({
   userData: {
-    interest: undefined,
+    interest: [],
   },
   addUserInterest: (value) =>
     set((state) => ({
@@ -28,14 +28,14 @@ export const useUserData = create<IUserData>((set) => ({
         ...state.userData,
         interest: state.userData.interest
           ? state.userData.interest.filter((el) => el !== value)
-          : undefined,
+          : [],
       },
     })),
   clearUserInterest: () =>
     set((state) => ({
       userData: {
         ...state.userData,
-        interest: undefined,
+        interest: [],
       },
     })),
 }))

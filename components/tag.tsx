@@ -38,7 +38,7 @@ export const Tag = ({
       if (pathName === "/exchange-diary") {
         removeInterest(children)
       }
-      if (pathName === "/get-extra-user-info/multi-select/1") {
+      if (pathName === "/welcome") {
         removeUserInterest(children)
       }
       if (pathName === "/mypage") {
@@ -50,7 +50,7 @@ export const Tag = ({
       if (pathName === "/exchange-diary") {
         setInterest(children)
       }
-      if (pathName === "/get-extra-user-info/multi-select/1") {
+      if (pathName === "/welcome") {
         addUserInterest(children)
       }
       if (pathName === "/mypage") {

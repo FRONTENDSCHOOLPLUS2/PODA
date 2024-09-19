@@ -83,7 +83,7 @@ export default function SignupPage() {
 
       formData.type = "seller"
       formData.extra = {
-        interest: undefined,
+        interest: [],
         isOnboarding: false,
       }
       delete formData.attach
