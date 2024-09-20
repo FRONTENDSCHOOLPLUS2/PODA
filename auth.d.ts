@@ -7,7 +7,7 @@ export declare module "@auth/core/types" {
     loginType?: string
     interest?: string[]
     isOnboarding?: boolean
-    tokenExpired?: boolean
+    refreshTokenExpired?: boolean
     accessToken?: string
     refreshToken?: string
     error?: string
@@ -24,7 +24,7 @@ export declare module "@auth/core/types" {
       extra?: {
         interest?: string[]
         isOnboarding?: boolean
-        tokenExpired?: boolean
+        refreshTokenExpired?: boolean
       }
     }
     accessToken?: string
@@ -39,7 +39,7 @@ export declare module "@auth/core/jwt" {
     providerAccountId?: string
     interest?: string[]
     isOnboarding?: boolean
-    tokenExpired?: boolean
+    refreshTokenExpired?: boolean
     accessToken?: string
     refreshToken?: string
   }

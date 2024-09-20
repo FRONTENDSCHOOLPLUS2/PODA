@@ -32,7 +32,7 @@ export const {
             refreshToken: user.token.refreshToken,
             interest: user.extra.interest,
             isOnboarding: user.extra.isOnboarding,
-            tokenExpired: false,
+            refreshTokenExpired: false,
           }
         } else if (!res.ok) {
           return { error: res.message }
@@ -95,7 +95,7 @@ export const {
           user._id = String(userInfo._id)
           user.interest = userInfo.extra.interest
           user.isOnboarding = userInfo.extra.isOnboarding
-          user.tokenExpired = false
+          user.refreshTokenExpired = false
           user.accessToken = userInfo.token.accessToken
           user.refreshToken = userInfo.token.refreshToken
 
@@ -109,7 +109,7 @@ export const {
         token._id = user._id
         token.interest = user.interest
         token.isOnboarding = user.isOnboarding
-        token.tokenExpired = user.tokenExpired
+        token.refreshTokenExpired = user.refreshTokenExpired
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
       }
@@ -149,7 +149,7 @@ export const {
             const resJson = await res.json()
             return {
               ...token,
-              tokenExpired: false,
+              refreshTokenExpired: false,
               accessToken: resJson.accessToken,
             }
           } else {
@@ -160,7 +160,7 @@ export const {
               )
               return {
                 ...token,
-                tokenExpired: true,
+                refreshTokenExpired: true,
               }
             }
           }
@@ -186,7 +186,7 @@ export const {
       session.user.extra = {
         interest: token.interest,
         isOnboarding: token.isOnboarding,
-        tokenExpired: token.tokenExpired,
+        refreshTokenExpired: token.refreshTokenExpired,
       }
       session.accessToken = token.accessToken
       session.refreshToken = token.refreshToken
