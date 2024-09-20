@@ -80,7 +80,7 @@ export default function SignupPage() {
 
         formData.image = fileRes.item[0].path
       }
-
+      formData.image = formData.image || null
       formData.type = "seller"
       formData.extra = {
         interest: [],

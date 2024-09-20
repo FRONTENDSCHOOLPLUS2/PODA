@@ -34,5 +34,5 @@ export interface SignupForm extends Pick<User, "name" | "email"> {
   password: string
   passwordCheck?: string
   attach?: FileList
-  image?: string
+  image?: string | null
 }
