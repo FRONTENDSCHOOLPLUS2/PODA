@@ -1,39 +1,33 @@
 import { auth } from "@/app/auth"
-import { postRequest } from "@/lib/protocol"
 import { NextRequest, NextResponse } from "next/server"
 
 const SERVER = process.env.NEXT_PUBLIC_API_URL
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, response: NextResponse) {
   const session = await auth()
 
   try {
-    const resLogin = await postRequest("/users/login/with", {
-      providerAccountId: session?.user?.providerAccountId,
-    })
+    const isOnboarding = session?.user.extra?.isOnboarding
 
-    if (!resLogin.ok) throw new Error("oauth-signup route.ts의 resLogin 에러")
-
-    const isOnboarding = resLogin.item.extra.isOnboarding
-
-    const resMutateUser = await fetch(`${SERVER}/users/${resLogin.item._id}`, {
+    const resMutateUser = await fetch(`${SERVER}/users/${session?.user._id}`, {
       method: "PATCH",
       headers: {
-        Authorization: `Bearer ${resLogin.item.token.accessToken}`,
+        Authorization: `Bearer ${session?.accessToken}`,
         "Content-Type": "application/json",
         "client-id": "09-triots",
       },
       body: JSON.stringify({
         refreshToken: session?.refreshToken,
         extra: {
-          ...resLogin.item.extra,
+          ...session?.user.extra,
           isOnboarding: true,
         },
       }),
     })
 
-    if (!resMutateUser.ok)
-      throw new Error("oauth-signup route.ts의 resMustateUser 에러")
+    if (!resMutateUser.ok) {
+      console.log(`authAction의 resMustateUser 에러 : `, resMutateUser)
+    }
 
     if (!isOnboarding) {
       return NextResponse.redirect(`${request.nextUrl.origin}/welcome`)

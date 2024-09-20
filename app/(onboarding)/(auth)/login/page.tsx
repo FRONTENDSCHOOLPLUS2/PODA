@@ -26,6 +26,7 @@ import {
 import { useTransition } from "react"
 import { FullScreen } from "@/components/spinner"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const FormSchema = z.object({
   email: z
@@ -41,6 +42,7 @@ const FormSchema = z.object({
 
 export default function LoginPage() {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,6 +67,8 @@ export default function LoginPage() {
             color: "white",
           },
         })
+      } else {
+        router.push("/api/credentials-login")
       }
     })
   }
