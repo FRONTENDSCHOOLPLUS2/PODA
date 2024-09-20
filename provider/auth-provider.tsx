@@ -16,18 +16,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [data, status])
 
   useEffect(() => {
-    const tokenExpired = data?.user.extra?.tokenExpired
+    const refreshTokenExpired = data?.user.extra?.refreshTokenExpired
 
     const signout = async () => {
       await signOut({ callbackUrl: "/login" })
     }
 
-    if (tokenExpired) {
+    if (refreshTokenExpired) {
       signout()
       localStorage.removeItem("token")
       localStorage.removeItem("accessToken")
     }
-  }, [data?.user.extra?.tokenExpired])
+  }, [data?.user.extra?.refreshTokenExpired])
 
   return <>{children}</>
 }
