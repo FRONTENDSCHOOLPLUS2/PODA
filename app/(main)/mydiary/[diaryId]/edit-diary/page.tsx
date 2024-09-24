@@ -111,19 +111,18 @@ export default function WriteDiaryPage() {
       },
     }
     try {
-      const res = patchMutate(requestBody)
-      console.log("res: ", res)
+      patchMutate(requestBody)
+      push("/mydiary")
     } catch (error) {
       console.log(error)
     } finally {
       resetValues()
-      push("/mydiary")
     }
   }
 
   return (
     <>
-      <NavigationHeader isBack isEditMode isMood isSave />
+      <NavigationHeader isBack isEditMode isMood />
       <div className="text-primary px-6 pt-16">
         <div className="flex justify-between gap-2 my-6">
           <EmotionItem isEditMode={isEditMode} />
