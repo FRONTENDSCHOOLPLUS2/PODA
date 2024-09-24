@@ -3,18 +3,12 @@
 import { Diary } from "@/components/diary"
 import { PartialLoading } from "@/components/spinner"
 import { usePostsMyDiarys } from "@/hooks/query/post"
+import { convertTime } from "@/lib/function"
 import { DiaryTypes } from "@/types/my-diarys"
-import { format, parse } from "date-fns"
-import { ko } from "date-fns/locale"
-import Image from "next/image"
+import { EmptyDiary } from "./empty-diary"
 
 export default function RenderMydiary({ userId }: { userId?: string }) {
   const { data, isPending } = usePostsMyDiarys("mydiary", Number(userId))
-
-  const convertTime = (inputDate: string) => {
-    const parsedDate = parse(inputDate, "yyyy.MM.dd", new Date())
-    return format(parsedDate, "M월 d일 EEEE", { locale: ko })
-  }
 
   const dates = data ? Object.keys(data) : []
   return (
@@ -46,15 +40,7 @@ export default function RenderMydiary({ userId }: { userId?: string }) {
           )
         })
       ) : (
-        <div className="flex flex-col justify-center items-center mt-28">
-          <Image
-            src={"/assets/no-diary.png"}
-            width={160}
-            height={160}
-            alt="다이어리 없을때 이미지"
-          />
-          <h2 className="mt-6 text-[#c4c4c4]">일기를 작성해주세요</h2>
-        </div>
+        <EmptyDiary />
       )}
     </div>
   )
