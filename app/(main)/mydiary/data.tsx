@@ -42,7 +42,7 @@ import { GiStomach } from "react-icons/gi"
 import { MdPregnantWoman } from "react-icons/md"
 import { BiSolidTired } from "react-icons/bi"
 
-type TagDetail = {
+export type TagDetail = {
   key: string
   icon: React.ReactElement
   text: string
