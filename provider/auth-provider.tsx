@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (refreshTokenExpired) {
+      alert("토큰이 만료되었습니다. 다시 로그인해 주세요.")
       signout()
       localStorage.removeItem("token")
       localStorage.removeItem("accessToken")
