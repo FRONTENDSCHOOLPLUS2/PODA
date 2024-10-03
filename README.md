@@ -330,5 +330,7 @@ PODA는 일기를 빠르고 간편하게 작성할 수 있는 메모 웹 앱입�
       
 ### 교환일기
 
+<br />
+
 ## 🧡 팀원 소개
 <img width="708" alt="image" src="https://github.com/user-attachments/assets/7f33a5c7-176c-43ec-80ca-e5a28814c938">
