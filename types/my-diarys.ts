@@ -44,6 +44,7 @@ export type DiaryTypes = {
     mood: keyof MoodType
     tag: string[]
     target: TargetTypes
+    attach?: string[]
   }
 }
 
