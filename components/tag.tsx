@@ -30,7 +30,7 @@ export const Tag = ({
     } else {
       setSelected(false)
     }
-  }, [userInterest, children])
+  }, [userInterest, children, pathName])
 
   const handleSelectTag = (e: React.MouseEvent<HTMLLabelElement>) => {
     if (selected) {

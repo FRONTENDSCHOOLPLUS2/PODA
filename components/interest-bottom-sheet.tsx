@@ -76,7 +76,7 @@ export const InterestBottomSheet = () => {
     if (pathname === "/mypage") {
       setMyInterest(userInterest)
     }
-  }, [isOpen])
+  }, [isOpen, userInterest, pathname])
 
   const handleRegister = async () => {
     const reqBody: any = {
