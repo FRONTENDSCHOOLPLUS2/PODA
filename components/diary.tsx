@@ -14,8 +14,19 @@ type DiaryProps = {
 }
 
 export const Diary = ({ diaryData, index, totalLength }: DiaryProps) => {
+  const SERVER = process.env.NEXT_PUBLIC_API_URL
   const { back } = useRouter()
   const pathname = usePathname()
+
+  const getImageWidth = () => {
+    const count = diaryData?.extra?.attach?.length
+    if (count) {
+      if (count === 1) return "w-full h-64"
+      if (count === 2 || count === 4) return "w-[calc(50%-4px)] h-36"
+      if (count === 3 || count >= 5) return "w-[calc(33%-5px)] h-20"
+    }
+    return ""
+  }
 
   return (
     <div
@@ -70,36 +81,22 @@ export const Diary = ({ diaryData, index, totalLength }: DiaryProps) => {
               <p className="text-primary text-xs">{diaryData.extra.content}</p>
             )}
           </div>
+          {/* 업로드한 이미지 */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {diaryData.extra.attach?.map((file) => (
+              <div key={file} className={getImageWidth()}>
+                <Image
+                  src={`${SERVER}/${file}`}
+                  alt={`Preview ${file}`}
+                  width={200}
+                  height={200}
+                  className="rounded w-full h-full object-cover object-center"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
-}
-
-{
-  /* 업로드한 이미지들 */
-}
-{
-  /* <div className="flex flex-wrap w-full gap-3">
-            {diaryData.uploadImgs &&
-              diaryData.uploadImgs.map((imgItem) => {
-                return (
-                  <div
-                    key={imgItem}
-                    className={`${
-                      diaryData.uploadImgs?.length === 1
-                        ? ""
-                        : "w-[calc(50%-6px)]"
-                    }`}>
-                    <Image
-                      src={imgItem}
-                      width={300}
-                      height={300}
-                      alt="업로드 이미지"
-                      className="object-cover rounded-md"
-                    />
-                  </div>
-                )
-              })}
-          </div> */
 }
