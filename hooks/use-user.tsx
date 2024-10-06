@@ -9,5 +9,5 @@ export const useUser = () => {
     return undefined
   }
 
-  return data?.user
+  return data.user
 }

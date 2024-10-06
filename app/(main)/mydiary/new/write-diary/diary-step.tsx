@@ -1,4 +1,5 @@
 "use client"
+
 import { NavigationHeader } from "@/components/navigation-header"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
@@ -251,7 +252,7 @@ export const DiaryStep = () => {
                 id="camera"
                 accept="image/*"
                 type="file"
-                capture="camera" // 카메라로 직접 촬영
+                capture="environment"
                 className="bg-[#555555] text-white hidden" // 숨김 처리
                 onChange={handleCameraClick}
               />

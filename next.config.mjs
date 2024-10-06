@@ -20,5 +20,5 @@ export default withPWA({
       },
     ],
   },
-  appDir: true,
+  // appDir: true,
 })
