@@ -7,21 +7,7 @@ import { ApiResError, ApiResSuccess } from "@/types/api-response"
 import { DiaryTypes } from "@/types/my-diarys"
 import { useQuery } from "@tanstack/react-query"
 
-export const usePostsDiarys = (
-  type: string,
-  // userId?: number,
-  productId?: number
-) => {
-  // const searchParams = productId
-  //   ? new URLSearchParams([
-  //       ["custom", JSON.stringify({ product_id: productId })],
-  //     ])
-  //   : null
-
-  // if (userId) {
-  //   searchParams.append("custom", JSON.stringify({ "user._id": userId }))
-  // }
-
+export const usePostsDiarys = (type: string, productId?: number) => {
   const searchParams = new URLSearchParams()
 
   if (productId) {
@@ -33,19 +19,12 @@ export const usePostsDiarys = (
   >({
     queryKey: [apiKeys.posts, productId],
     queryFn: async () => {
-      // const res = productId
-      //   ? await fetcher(
-      //       `${apiKeys.posts}?type=${type}&${searchParams?.toString()}`
-      //     )
-      //   : await fetcher(`${apiKeys.posts}?type=${type}`)
       const res = await fetcher(
         `${apiKeys.posts}?type=${type}&${searchParams.toString()}`
       )
-
       if (res && res.item.length === 0) {
         return undefined
       }
-
       return sortDiarys(res.item)
     },
   })
@@ -69,9 +48,6 @@ export const usePostsMyDiarys = (type: string, userId: number) => {
       const res = await fetcher(
         `${apiKeys.posts}?type=${type}&${searchParams.toString()}`
       )
-      // if (res && res.item.length === 0) {
-      //   return undefined
-      // }
       return sortMyDiarys(res.item)
     },
   })
@@ -84,11 +60,12 @@ export const usePostsMyDiarys = (type: string, userId: number) => {
   }
 }
 
-export const usePostsDiary = (id: string) => {
+export const usePostsDiary = (id: number) => {
   const { data, isPending, error, refetch } = useQuery({
     queryKey: [apiKeys.posts, id],
     queryFn: async () => {
-      return await fetcher(`/posts/${id}`)
+      const res = await await fetcher(`/posts/${id}`)
+      return res.item
     },
   })
 
@@ -126,3 +103,36 @@ export const usePostsExchangeMyDiarys = (type: string, userId: number) => {
     refetch,
   }
 }
+
+// // 특정 달에 해당하는 데이터만 불러오기 (서버단)
+// export const usePostDates = (type: string, userId: number) => {
+//   const searchParams = new URLSearchParams()
+//   searchParams.append("custom", JSON.stringify({ "user._id": userId }))
+//   const { data, isPending, error, refetch } = useQuery({
+//     queryKey: [apiKeys.posts, userId],
+//     queryFn: async () => {
+//       const res = await fetcher(
+//         `${apiKeys.posts}?type=${type}&${searchParams.toString()}`
+//       )
+//       return res.item
+//     },
+//   })
+
+//   const uniqueMonths = data
+//     ? data.reduce((acc: any, post: any) => {
+//         const month = post.createdAt.substring(0, 7) // "yyyy.MM" 형식으로 변환
+//         if (!acc.includes(month)) {
+//           acc.push(month) // 중복이 없으면 배열에 추가
+//         }
+//         return acc
+//       }, [])
+//     : []
+
+//   return {
+//     uniqueMonths,
+//     data,
+//     isPending,
+//     error,
+//     refetch,
+//   }
+// }
