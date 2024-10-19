@@ -93,8 +93,12 @@ export const DiaryStep = () => {
       fileInputValue.forEach((value) => {
         body.append("attach", value)
       })
+      console.log("작성페이지의 body 값 : @@@@@@@@@@@@@@", body.get("attach"))
+      // console.log("작성페이지 body 값@@@@@@@@@@@@@ : ", body, fileInputValue)
 
       const fileRes = await postFormRequest(`${SERVER}/files`, body)
+
+      // console.log("작성페이지 fileRes", fileRes)
 
       if (!fileRes.ok) {
         throw new Error("파일 업로드 실패입니다.")
@@ -160,6 +164,7 @@ export const DiaryStep = () => {
     const files = Array.from(e.target.files || [])
     setFileInputValue((prevFiles) => [...prevFiles, ...files])
   }
+
   const handleRemoveImage = (name: string) => {
     setFileInputValue((prevFiles) =>
       prevFiles.filter((file) => file.name !== name)
@@ -176,7 +181,7 @@ export const DiaryStep = () => {
 
   return (
     <>
-      <NavigationHeader isBack isNew isMood isSave />
+      <NavigationHeader isBack isNew isSave />
       <div className="h-full text-primary pt-16 px-6">
         <div className="flex gap-2 mb-4">
           <Image
