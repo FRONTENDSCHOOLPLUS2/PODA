@@ -87,47 +87,86 @@ export const DiaryStep = () => {
   }
 
   const handleSave = async () => {
-    // 이미지를 업로드
+    let newImagePathList = []
+
     if (fileInputValue.length > 0) {
       const body = new FormData()
       fileInputValue.forEach((value) => {
         body.append("attach", value)
       })
       console.log("작성페이지의 body 값 : @@@@@@@@@@@@@@", body.get("attach"))
-      // console.log("작성페이지 body 값@@@@@@@@@@@@@ : ", body, fileInputValue)
 
       const fileRes = await postFormRequest(`${SERVER}/files`, body)
-
-      // console.log("작성페이지 fileRes", fileRes)
 
       if (!fileRes.ok) {
         throw new Error("파일 업로드 실패입니다.")
       }
 
       // 이미지 경로를 설정
-      const newImagePathList = fileRes.item.map((value: any) => value.path)
-
-      // requestBody를 업로드 후 구성
-      const requestBody = {
-        type: "mydiary",
-        extra: {
-          title: noteTitleVal,
-          content: noteContentVal,
-          mood: moodVal,
-          tag: selectedTags ? [...selectedTags] : [],
-          attach: newImagePathList, // 즉시 업데이트된 경로 사용
-        },
-      }
-
-      try {
-        mutate(requestBody)
-        push("/mydiary")
-      } catch (error) {
-        console.log(error)
-      } finally {
-        // resetValues();
-      }
+      newImagePathList = fileRes.item.map((value: any) => value.path)
     }
+    // requestBody를 구성
+    const requestBody = {
+      type: "mydiary",
+      extra: {
+        title: noteTitleVal,
+        content: noteContentVal,
+        mood: moodVal,
+        tag: selectedTags ? [...selectedTags] : [],
+        attach: newImagePathList,
+      },
+    }
+
+    try {
+      mutate(requestBody)
+      push("/mydiary")
+    } catch (error) {
+      console.log(error)
+    } finally {
+      // resetValues();
+    }
+
+    // // 이미지를 업로드
+    // if (fileInputValue.length > 0) {
+    //   const body = new FormData()
+    //   fileInputValue.forEach((value) => {
+    //     body.append("attach", value)
+    //   })
+    //   console.log("작성페이지의 body 값 : @@@@@@@@@@@@@@", body.get("attach"))
+    //   // console.log("작성페이지 body 값@@@@@@@@@@@@@ : ", body, fileInputValue)
+
+    //   const fileRes = await postFormRequest(`${SERVER}/files`, body)
+
+    //   // console.log("작성페이지 fileRes", fileRes)
+
+    //   if (!fileRes.ok) {
+    //     throw new Error("파일 업로드 실패입니다.")
+    //   }
+
+    //   // 이미지 경로를 설정
+    //   const newImagePathList = fileRes.item.map((value: any) => value.path)
+
+    //   // requestBody를 업로드 후 구성
+    //   const requestBody = {
+    //     type: "mydiary",
+    //     extra: {
+    //       title: noteTitleVal,
+    //       content: noteContentVal,
+    //       mood: moodVal,
+    //       tag: selectedTags ? [...selectedTags] : [],
+    //       attach: newImagePathList, // 즉시 업데이트된 경로 사용
+    //     },
+    //   }
+
+    //   try {
+    //     mutate(requestBody)
+    //     push("/mydiary")
+    //   } catch (error) {
+    //     console.log(error)
+    //   } finally {
+    //     // resetValues();
+    //   }
+    // }
   }
 
   const swipeRef = useRef<HTMLDivElement>(null)
