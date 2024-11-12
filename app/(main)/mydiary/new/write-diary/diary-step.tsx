@@ -95,7 +95,6 @@ export const DiaryStep = () => {
       fileInputValue.forEach((value) => {
         body.append("attach", value)
       })
-      console.log("작성페이지의 body 값 : @@@@@@@@@@@@@@", body.get("attach"))
 
       const fileRes = await postFormRequest(`${SERVER}/files`, body)
 

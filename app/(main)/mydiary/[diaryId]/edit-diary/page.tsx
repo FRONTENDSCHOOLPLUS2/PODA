@@ -46,16 +46,18 @@ export default function WriteDiaryPage() {
   )
   const SERVER = process.env.NEXT_PUBLIC_API_URL
   const { mutate: patchMutate } = usePatchPost(Number(diaryId))
-  const { data: fetchedPostData } = usePostsDiary(Number(diaryId))
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [fileInputValue, setFileInputValue] = useState<FilePreview[]>([])
   const [existingImagePaths, setExistingImagePaths] = useState<string[]>([])
+  const { data: fetchedPostData } = usePostsDiary(Number(diaryId))
 
-  // 일기 데이터가 패칭되면 상태 업데이트
   useEffect(() => {
-    if (fetchedPostData) {
+    if (
+      fetchedPostData &&
+      fetchedPostData.extra &&
+      fetchedPostData.extra.attach
+    ) {
       setSelectedTags(fetchedPostData.extra.tag)
-      // 기존 이미지 URL을 활용하여 미리보기 이미지 상태 설정
       const initialFiles = fetchedPostData.extra.attach.map((path: string) => ({
         name: path.split("/").pop() || "unknown", // 파일 이름 추출
         url: path, // 이미지 URL
@@ -69,12 +71,9 @@ export default function WriteDiaryPage() {
   const handleRemoveImage = (name: string) => {
     setFileInputValue((prevFiles) => {
       const filteredFiles = prevFiles.filter((file) => file.name !== name)
-      console.log("남은 파일들: ", filteredFiles) // 디버깅을 위한 로그
-      return filteredFiles // 필터링된 배열 반환
+      return filteredFiles
     })
-
     setExistingImagePaths((prevPaths) => {
-      // 삭제할 파일의 경로를 제거
       return prevPaths.filter((path) => path.split("/").pop() !== name)
     })
   }
@@ -133,7 +132,7 @@ export default function WriteDiaryPage() {
       }))
     }
   }
-  // 미리보기 박스에서 태그 클릭 시 해당 태그 제거
+
   const handlePreviewTagClick = (key: string) => {
     if (selectedTags) {
       setSelectedTags(
@@ -161,50 +160,48 @@ export default function WriteDiaryPage() {
   const handleInpVal = (e: ChangeEvent<HTMLInputElement>) => {
     seter(e.target.value, "noteContentVal")
   }
+
   const handleEdit = async () => {
-    if (fileInputValue.length > 0) {
-      const body = new FormData()
+    const body = new FormData()
 
-      // 기존 이미지 경로를 추가
-      existingImagePaths.forEach((path) => {
-        body.append("attach", path) // 기존 이미지 경로 추가
-      })
+    // 기존 이미지 경로를 추가
+    existingImagePaths.forEach((path) => {
+      body.append("attach", path) // 기존 이미지 경로 추가
+    })
 
-      // 새로 업로드할 파일이 있는 경우에만 추가
-      fileInputValue.forEach((filePreview: any) => {
-        if (filePreview.isNew) {
-          // 새 파일일 경우에만 추가
-          body.append("attach", filePreview.file) // 원본 File 객체 추가
-        }
-      })
-
-      const fileRes = await postFormRequest(`${SERVER}/files`, body)
-
-      if (!fileRes.ok) {
-        const errorDetail = await fileRes.json()
-        console.error("파일 업로드 실패: ", errorDetail)
-        throw new Error("파일 업로드 실패입니다.")
+    // 새로 업로드할 파일이 있는 경우에만 추가
+    fileInputValue.forEach((filePreview: any) => {
+      if (filePreview.isNew) {
+        body.append("attach", filePreview.file) // 원본 File 객체 추가
       }
+    })
 
-      const newImagePathList = fileRes.item.map((value: any) => value.path)
+    const fileRes = await postFormRequest(`${SERVER}/files`, body)
 
-      const requestBody = {
-        extra: {
-          title: noteTitleVal,
-          content: noteContentVal,
-          mood: moodVal,
-          tag: selectedTags,
-          attach: [...existingImagePaths, ...newImagePathList],
-        },
-      }
+    if (!fileRes.ok) {
+      const errorDetail = await fileRes.json()
+      console.error("파일 업로드 실패: ", errorDetail)
+      throw new Error("파일 업로드 실패입니다.")
+    }
 
-      try {
-        patchMutate(requestBody)
-        push("/mydiary")
-        resetValues()
-      } catch (error) {
-        console.log(error)
-      }
+    const newImagePathList = fileRes.item.map((value: any) => value.path)
+
+    const requestBody = {
+      extra: {
+        title: noteTitleVal,
+        content: noteContentVal,
+        mood: moodVal,
+        tag: selectedTags,
+        attach: [...existingImagePaths, ...newImagePathList],
+      },
+    }
+
+    try {
+      patchMutate(requestBody)
+      push("/mydiary")
+      resetValues()
+    } catch (error) {
+      console.log(error)
     }
   }
 
